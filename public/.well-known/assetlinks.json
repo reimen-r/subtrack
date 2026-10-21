@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.subtrack.app",
+      "sha256_cert_fingerprints": [
+        "14:6D:E9:7D:0C:52:AB:71:6C:54:21:58:8E:22:98:C3:63:F5:F4:7E:6D:74:6E:9E:09:A6:49:10:87:6D:1A:92"
+      ]
+    }
+  }
+]

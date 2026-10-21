@@ -1,0 +1,8 @@
+{
+  "name": "SubTrack - Subscription Manager",
+  "description": "A modern, intuitive mobile subscription tracker with spending breakdowns, upcoming payment alerts, renewal analytics, and customizable reminders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
