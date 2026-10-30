@@ -131,16 +131,25 @@ export const SwipeableSubscriptionCard: React.FC<SwipeableSubscriptionCardProps>
         onDragStart={() => setIsDragging(true)}
         onDragEnd={handleDragEnd}
         style={{ x }}
-        className="relative z-10 p-3.5 sm:p-4 bg-white/95 dark:bg-zinc-900/85 backdrop-blur-2xl border border-zinc-200/90 dark:border-white/10 rounded-2xl sm:rounded-3xl shadow-sm hover:shadow-md dark:shadow-black/40 hover:border-zinc-300 dark:hover:border-white/20 transition-all flex flex-col gap-2.5 cursor-grab active:cursor-grabbing"
+        className="relative z-10 p-3.5 sm:p-4 bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800/80 rounded-2xl sm:rounded-3xl shadow-xs hover:shadow-md dark:shadow-black/30 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col gap-2.5 cursor-grab active:cursor-grabbing"
       >
         {/* Top Main Row */}
         <div 
+          role="button"
+          tabIndex={0}
+          aria-label={`Ver detalles de ${sub.name}, costo ${formatCurrency(sub.cost, sub.currency)} ${sub.frequency}, vence ${dueInfo.label}`}
           onClick={() => {
             if (!isDragging) {
               onSelectSubscription(sub);
             }
           }}
-          className="flex items-center justify-between gap-2.5 w-full cursor-pointer"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelectSubscription(sub);
+            }
+          }}
+          className="flex items-center justify-between gap-2.5 w-full cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-xl"
         >
           {/* Left: Logo & Service Info */}
           <div className="flex items-center gap-3 min-w-0 flex-1">

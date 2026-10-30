@@ -427,40 +427,64 @@ export const AddEditSubscriptionModal: React.FC<AddEditSubscriptionModalProps> =
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-edit-modal-title"
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 0 }}
+          dragElastic={{ top: 0, bottom: 0.6 }}
+          onDragEnd={(_, info) => {
+            if (info.offset.y > 100) {
+              onClose();
+            }
+          }}
           initial={{ opacity: 0, y: 40, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 40, scale: 0.96 }}
           transition={{ type: 'spring', damping: 26, stiffness: 320 }}
           className="w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         >
-          {/* Mobile Sheet Drag Indicator (Apple HIG Sheet Grabber) */}
-          <div className="w-10 h-1.5 rounded-full bg-zinc-600/90 mx-auto mt-2.5 -mb-1 sm:hidden shrink-0" />
+          {/* Mobile Sheet Drag Indicator (Apple HIG Sheet Grabber with swipe down to dismiss) */}
+          <div 
+            className="w-10 h-1.5 rounded-full bg-zinc-600/90 mx-auto mt-2.5 -mb-1 sm:hidden shrink-0 cursor-grab active:cursor-grabbing" 
+            title="Desliza hacia abajo para cerrar"
+          />
 
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800 bg-zinc-950 sticky top-0 z-20">
-            <div className="flex items-center gap-2 sm:gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20 shrink-0">
-                <Sparkles size={16} />
-              </div>
-              <div>
-                <h2 id="add-edit-modal-title" className="text-sm sm:text-base font-bold text-white tracking-tight">
-                  {initialData ? 'Editar Suscripción' : 'Añadir Suscripción'}
-                </h2>
-                <p className="text-[10px] sm:text-[11px] text-zinc-400">Controla gastos recurrentes y recordatorios</p>
-              </div>
-            </div>
+          {/* iOS Standard Sheet Navigation Bar (Cancel on leading, Done on trailing) */}
+          <div className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3 border-b border-zinc-800 bg-zinc-950 sticky top-0 z-20">
+            {/* Leading Edge: Cancel */}
             <button
-              id="close-modal-btn"
+              type="button"
+              id="cancel-modal-btn"
               onClick={onClose}
-              className="min-h-[44px] min-w-[44px] rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors flex items-center justify-center cursor-pointer active:scale-95"
-              aria-label="Cerrar modal"
+              className="min-h-[44px] px-2.5 py-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors flex items-center justify-center text-xs font-semibold cursor-pointer active:scale-95"
+              aria-label="Cancelar cambios y cerrar"
             >
-              <X size={18} />
+              Cancelar
+            </button>
+
+            {/* Center: Title & Scoped Task */}
+            <div className="text-center px-2">
+              <h2 id="add-edit-modal-title" className="text-sm font-bold text-white tracking-tight">
+                {initialData ? 'Editar Suscripción' : 'Nueva Suscripción'}
+              </h2>
+              <p className="text-[10px] text-zinc-400 hidden xs:block">
+                {initialData ? 'Modifica los parámetros de cobro' : 'Detalles de servicio y ciclo'}
+              </p>
+            </div>
+
+            {/* Trailing Edge: Done / Save (Prominent Action) */}
+            <button
+              type="submit"
+              form="add-edit-sub-form"
+              id="save-modal-btn"
+              disabled={!name.trim()}
+              className="min-h-[44px] px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold text-xs transition-all flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
+              aria-label={initialData ? 'Guardar cambios' : 'Añadir suscripción'}
+            >
+              {initialData ? 'Guardar' : 'Añadir'}
             </button>
           </div>
 
           {/* Form Scroll Area */}
-          <form onSubmit={handleSubmit} className="overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5 flex-1 text-sm">
+          <form id="add-edit-sub-form" onSubmit={handleSubmit} className="overflow-y-auto px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-5 flex-1 text-sm">
             
             {/* Live Visual Card Preview */}
             <div className="p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800 relative overflow-hidden">

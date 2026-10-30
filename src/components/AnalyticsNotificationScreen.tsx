@@ -249,7 +249,7 @@ export const AnalyticsNotificationScreen: React.FC<AnalyticsNotificationScreenPr
     : [];
 
   return (
-    <div id="analytics-screen" className="flex-1 flex flex-col bg-slate-50 dark:bg-black text-zinc-900 dark:text-white min-h-full pb-36 sm:pb-32">
+    <div id="analytics-screen" className="flex-1 flex flex-col bg-slate-50 dark:bg-black text-zinc-900 dark:text-white min-h-full pb-24 sm:pb-22">
       
       {/* Top Header & Tab Switcher */}
       <div className="px-3.5 sm:px-5 pt-3.5 sm:pt-5 pb-2.5 sm:pb-3 space-y-3 sm:space-y-4">
@@ -268,13 +268,13 @@ export const AnalyticsNotificationScreen: React.FC<AnalyticsNotificationScreenPr
             role="tab"
             aria-selected={activeTab === 'analytics'}
             onClick={() => setActiveTab('analytics')}
-            className={`flex-1 min-h-[40px] py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer ${
+            className={`flex-1 min-h-[44px] py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === 'analytics'
                 ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
           >
-            <TrendingUp size={13} className={activeTab === 'analytics' ? 'text-emerald-500' : ''} />
+            <TrendingUp size={14} className={activeTab === 'analytics' ? 'text-emerald-500' : ''} />
             <span>Gastos</span>
           </button>
           <button
@@ -282,13 +282,13 @@ export const AnalyticsNotificationScreen: React.FC<AnalyticsNotificationScreenPr
             role="tab"
             aria-selected={activeTab === 'calendar'}
             onClick={() => setActiveTab('calendar')}
-            className={`flex-1 min-h-[40px] py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer ${
+            className={`flex-1 min-h-[44px] py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === 'calendar'
                 ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
           >
-            <CalendarIcon size={13} className={activeTab === 'calendar' ? 'text-indigo-500' : ''} />
+            <CalendarIcon size={14} className={activeTab === 'calendar' ? 'text-indigo-500' : ''} />
             <span>Calendario</span>
           </button>
           <button
@@ -296,13 +296,13 @@ export const AnalyticsNotificationScreen: React.FC<AnalyticsNotificationScreenPr
             role="tab"
             aria-selected={activeTab === 'notifications'}
             onClick={() => setActiveTab('notifications')}
-            className={`flex-1 min-h-[40px] py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer ${
+            className={`flex-1 min-h-[44px] py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1 sm:gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === 'notifications'
                 ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
           >
-            <Bell size={13} className={activeTab === 'notifications' ? 'text-emerald-500' : ''} />
+            <Bell size={14} className={activeTab === 'notifications' ? 'text-emerald-500' : ''} />
             <span>Avisos</span>
           </button>
         </div>

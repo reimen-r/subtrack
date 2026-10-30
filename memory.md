@@ -81,6 +81,26 @@ This document records the chronological history, design decisions, architectural
 
 ---
 
+### Phase 7: Apple Design Skill Audit & System Enhancement (`dickwu/apple-design-skill`)
+- **User Directive:** "npx skills add dickwu/apple-design-skill instala esta skill y usala para mejorar la app"
+- **Skill Repository Integration:** Installed `dickwu/apple-design-skill` containing 123 reference guidelines from developer.apple.com under `/.skills/apple-design/`.
+- **System Audit & Remediation via 5 HIG Lenses:**
+  1. **Accessibility (`accessibility.md` & `liquid-glass.md` item 5):**
+     - Added `@media (prefers-reduced-transparency: reduce)` fallback for all Liquid Glass components (`.ios-glass-bar`, `.ios-dock`, `.ios-glass-header`).
+     - Added `@media (prefers-contrast: more)` for high-contrast accessibility.
+     - Enforced strict 44pt touch targets (`min-h-[44px]`) on all segmented controls (Mensual/Anual, Gastos/Calendario/Avisos, Guardar Copia/Restaurar).
+     - Added explicit ARIA roles, `tabIndex={0}`, and keyboard event listeners (`Enter`/`Space`) to `SwipeableSubscriptionCard`.
+  2. **Platform Conventions (`sheets.md` & `tab-bars.md`):**
+     - Aligned `AddEditSubscriptionModal` top navigation bar with standard iOS sheet ergonomics: "Cancelar" on the leading edge, "Guardar" / "Añadir" prominent button on the trailing edge, plus drag-to-dismiss gesture.
+     - Replaced back icon in `SubscriptionDetailScreen` with canonical iOS `ChevronLeft` navigation styling.
+     - Streamlined dock labels in `BottomNavBar` to single-word terminology: `Suscripciones`, `Analítica`, `Ajustes`.
+  3. **Visual Design & Craft (`liquid-glass.md` & `branding.md`):**
+     - Enforced Liquid Glass layer discipline: removed redundant heavy `backdrop-blur` from content-layer cards, reserving translucent Liquid Glass strictly for floating functional chrome (Dock & Header).
+     - Unified dock active tab indicators to the signature emerald brand color (`#10b981`), removing competing multi-colored dock pills.
+     - Preserved tabular figure alignment across all monetary and countdown elements.
+
+---
+
 ## 3. Key Design Decisions & Technical Trade-offs
 
 | Decision | Alternative Considered | Rationale |

@@ -196,7 +196,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
   }, [subscriptions]);
 
   return (
-    <div id="dashboard-screen" className="flex-1 flex flex-col bg-slate-50 dark:bg-black text-zinc-900 dark:text-white min-h-full pb-36 sm:pb-32">
+    <div id="dashboard-screen" className="flex-1 flex flex-col bg-slate-50 dark:bg-black text-zinc-900 dark:text-white min-h-full pb-24 sm:pb-22">
       
       {/* Top Header & Spend Breakdown */}
       <div className="px-3.5 sm:px-5 pt-3.5 sm:pt-5 pb-3 sm:pb-4 space-y-3.5 sm:space-y-4">
@@ -236,7 +236,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
           <div className="flex p-1 bg-zinc-100 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800/80 rounded-xl shrink-0 gap-1">
             <button
               onClick={() => setSpendViewMode('monthly')}
-              className={`min-h-[40px] px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all tap-tactile cursor-pointer ${
+              className={`min-h-[44px] px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all tap-tactile cursor-pointer ${
                 spendViewMode === 'monthly'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
@@ -246,7 +246,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
             </button>
             <button
               onClick={() => setSpendViewMode('yearly')}
-              className={`min-h-[40px] px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all tap-tactile cursor-pointer ${
+              className={`min-h-[44px] px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all tap-tactile cursor-pointer ${
                 spendViewMode === 'yearly'
                   ? 'bg-emerald-500 text-zinc-950 font-bold shadow-sm shadow-emerald-500/20'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'

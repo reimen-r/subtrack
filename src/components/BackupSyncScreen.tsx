@@ -160,7 +160,7 @@ export const BackupSyncScreen: React.FC<BackupSyncScreenProps> = ({
   };
 
   return (
-    <div id="backup-sync-screen" className="flex-1 flex flex-col bg-slate-50 dark:bg-black text-zinc-900 dark:text-white min-h-full pb-36 sm:pb-32">
+    <div id="backup-sync-screen" className="flex-1 flex flex-col bg-slate-50 dark:bg-black text-zinc-900 dark:text-white min-h-full pb-24 sm:pb-22">
       
       {/* Header */}
       <div className="px-3.5 sm:px-5 pt-3.5 sm:pt-5 pb-2.5 sm:pb-3 space-y-3 sm:space-y-4">
@@ -181,13 +181,13 @@ export const BackupSyncScreen: React.FC<BackupSyncScreenProps> = ({
             role="tab"
             aria-selected={activeTab === 'export'}
             onClick={() => setActiveTab('export')}
-            className={`flex-1 min-h-[40px] py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`flex-1 min-h-[44px] py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === 'export'
                 ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
           >
-            <Download size={13} className={activeTab === 'export' ? 'text-emerald-500' : ''} />
+            <Download size={14} className={activeTab === 'export' ? 'text-emerald-500' : ''} />
             <span>Guardar Copia</span>
           </button>
           
@@ -196,13 +196,13 @@ export const BackupSyncScreen: React.FC<BackupSyncScreenProps> = ({
             role="tab"
             aria-selected={activeTab === 'import'}
             onClick={() => setActiveTab('import')}
-            className={`flex-1 min-h-[40px] py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            className={`flex-1 min-h-[44px] py-2 text-[11px] sm:text-xs font-bold rounded-lg sm:rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 ${
               activeTab === 'import'
                 ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
                 : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
             }`}
           >
-            <Upload size={13} className={activeTab === 'import' ? 'text-indigo-500' : ''} />
+            <Upload size={14} className={activeTab === 'import' ? 'text-indigo-500' : ''} />
             <span>Restaurar</span>
           </button>
         </div>

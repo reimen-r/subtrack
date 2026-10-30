@@ -10,6 +10,46 @@
 [![PWA Ready](https://img.shields.io/badge/PWA-Offline_First-00E676?logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![Privacy](https://img.shields.io/badge/Privacy-Zero_Telemetry-emerald)](./security.md)
 
+<br/>
+
+<p align="center">
+  <img src="docs/screenshots/subtrack-hero.jpg" alt="SubTrack App Showcase" width="100%" style="border-radius: 16px; box-shadow: 0 20px 48px rgba(0,0,0,0.6);" />
+</p>
+
+---
+
+## 📸 Capturas de Pantalla / UI Showcase
+
+<div align="center">
+  <table>
+    <tr>
+      <td width="33%" align="center">
+        <img src="docs/screenshots/dashboard.jpg" alt="Dashboard Principal de SubTrack" width="100%" style="border-radius: 14px;" />
+      </td>
+      <td width="33%" align="center">
+        <img src="docs/screenshots/analytics.jpg" alt="Analítica de Gastos y Calendario" width="100%" style="border-radius: 14px;" />
+      </td>
+      <td width="33%" align="center">
+        <img src="docs/screenshots/swipe-detail.jpg" alt="Gestos Swipe y Planes Compartidos" width="100%" style="border-radius: 14px;" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <b>📱 Panel Principal & Burn Rate</b><br/>
+        <sub>Métricas en vivo, cuenta regresiva de vencimientos, chips de filtro y catálogo de 40+ logos oficiales.</sub>
+      </td>
+      <td align="center">
+        <b>📊 Analítica & Calendario</b><br/>
+        <sub>Distribución porcentual por categorías, gráficos de tendencias y centro de diagnóstico de alertas.</sub>
+      </td>
+      <td align="center">
+        <b>⚡ Gestos Táctiles & Cuotas</b><br/>
+        <sub>Deslizamiento rápido para pagar o editar, cálculo de planes familiares compartidos y Dynamic Island.</sub>
+      </td>
+    </tr>
+  </table>
+</div>
+
 ---
 
 ## ✨ Features at a Glance

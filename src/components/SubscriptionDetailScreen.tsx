@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
+  ChevronLeft,
   ArrowLeft, 
   ExternalLink, 
   Edit3, 
@@ -248,10 +249,10 @@ export const SubscriptionDetailScreen: React.FC<SubscriptionDetailScreenProps> =
         <button
           id="back-to-dashboard-btn"
           onClick={onBack}
-          className="min-h-[44px] px-2.5 -ml-1 rounded-xl text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/60 active:scale-95 transition-all flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
-          aria-label="Volver al panel"
+          className="min-h-[44px] px-2 -ml-1 rounded-xl text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 hover:bg-emerald-500/10 active:scale-95 transition-all flex items-center gap-0.5 text-xs font-semibold cursor-pointer"
+          aria-label="Volver al panel de suscripciones"
         >
-          <ArrowLeft size={16} />
+          <ChevronLeft size={20} className="-ml-1" />
           <span>Volver</span>
         </button>
 
