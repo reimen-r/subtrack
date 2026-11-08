@@ -7,6 +7,8 @@ import {
   Smartphone, 
   Monitor, 
   ShieldCheck, 
+  Columns2,
+  Sparkles,
 } from 'lucide-react';
 import { 
   Subscription, 
@@ -46,6 +48,8 @@ const STORAGE_KEY_SETTINGS = 'subtrack_settings_v2';
 const STORAGE_KEY_NOTIFIED_CYCLES = 'subtrack_notified_cycles';
 const STORAGE_KEY_NOTIFS = 'subtrack_notifs_v2_clean';
 const STORAGE_KEY_THEME = 'subtrack_theme_preference';
+export type DevicePose = 'iphone' | 'duo' | 'fluid';
+const STORAGE_KEY_DEVICE_POSE = 'subtrack_device_pose_v27';
 
 export default function App() {
   // Theme state with localStorage persistence
@@ -155,8 +159,24 @@ export default function App() {
   // Active push banner state
   const [activeBanner, setActiveBanner] = useState<{ title: string; message: string } | null>(null);
 
-  // View presentation mode (Mobile Frame vs Fluid Responsive)
-  const [isPhoneFrame, setIsPhoneFrame] = useState(false);
+  // View presentation mode (iPhone Pro, iPhone Duo Foldable, or Fluid Responsive)
+  const [devicePose, setDevicePose] = useState<DevicePose>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(STORAGE_KEY_DEVICE_POSE);
+      if (saved === 'iphone' || saved === 'duo' || saved === 'fluid') {
+        return saved;
+      }
+      if (window.innerWidth >= 1024) return 'duo';
+      if (window.innerWidth >= 640) return 'iphone';
+    }
+    return 'fluid';
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_DEVICE_POSE, devicePose);
+  }, [devicePose]);
+
+  const isPhoneFrame = devicePose === 'iphone';
 
   // Persist changes
   useEffect(() => {
@@ -552,8 +572,8 @@ export default function App() {
         onDismiss={() => setActiveBanner(null)}
       />
 
-      {/* Top Utility Bar (iOS Translucent Glass Header with Safe Area support) */}
-      <header className="w-full max-w-2xl px-3 sm:px-4 pt-[max(env(safe-area-inset-top,0px),0.65rem)] pb-2.5 flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/60 text-xs text-zinc-500 dark:text-zinc-400 select-none sticky top-0 z-30 ios-glass-header">
+      {/* Top Utility Bar (iOS 27 Translucent Glass Header with Safe Area support) */}
+      <header className="w-full max-w-5xl px-3 sm:px-5 pt-[max(env(safe-area-inset-top,0px),0.65rem)] pb-2.5 flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/60 text-xs text-zinc-500 dark:text-zinc-400 select-none sticky top-0 z-30 ios-glass-header transition-all">
         <div className="flex items-center gap-2">
           <SubTrackLogo
             variant="image"
@@ -568,24 +588,48 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Phone Frame Toggle (visible on desktop/tablets to simulate mobile device) */}
-          <button
-            onClick={() => setIsPhoneFrame(!isPhoneFrame)}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white text-xs font-semibold transition-all cursor-pointer shadow-sm active:scale-95"
-            title={isPhoneFrame ? 'Cambiar a vista fluida' : 'Simular marco de iPhone'}
-          >
-            {isPhoneFrame ? (
-              <>
-                <Monitor size={13} className="text-indigo-400" />
-                <span>Vista Fluida</span>
-              </>
-            ) : (
-              <>
-                <Smartphone size={13} className="text-indigo-400" />
-                <span>Simular Móvil</span>
-              </>
-            )}
-          </button>
+          {/* iOS 27 Multi-Pose Segmented Selector (iPhone Pro | iPhone Duo | Fluido) */}
+          <div className="hidden sm:flex items-center p-0.5 rounded-xl bg-zinc-200/80 dark:bg-zinc-900/90 border border-zinc-300/80 dark:border-zinc-800/80 text-xs font-semibold shadow-xs">
+            <button
+              type="button"
+              onClick={() => setDevicePose('iphone')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                devicePose === 'iphone'
+                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+              title="Marco compacto estilo iPhone Pro"
+            >
+              <Smartphone size={12} className={devicePose === 'iphone' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
+              <span>iPhone Pro</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setDevicePose('duo')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                devicePose === 'duo'
+                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+              title="Pantalla doble plegable iPhone Duo (Arrangement View)"
+            >
+              <Columns2 size={12} className={devicePose === 'duo' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
+              <span>iPhone Duo</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setDevicePose('fluid')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                devicePose === 'fluid'
+                  ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
+              }`}
+              title="Vista Fluida sin marco de dispositivo"
+            >
+              <Monitor size={12} className={devicePose === 'fluid' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
+              <span>Fluido</span>
+            </button>
+          </div>
 
           {/* Theme Selector Toggle */}
           <button
@@ -610,122 +654,339 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Container / Mobile Frame Wrapper */}
+      {/* Main Container / iOS 27 Multi-Pose Wrapper */}
       <main
         className={`w-full transition-all duration-300 flex-1 flex flex-col no-scrollbar ${
-          isPhoneFrame
+          devicePose === 'duo'
+            ? 'max-w-5xl my-3 sm:my-4 rounded-[40px] border-[5px] border-zinc-800/90 shadow-2xl shadow-black/80 h-[830px] max-h-[88vh] relative bg-white dark:bg-black overflow-hidden flex flex-row'
+            : devicePose === 'iphone'
             ? 'max-w-[420px] my-3 sm:my-4 rounded-[42px] border-[5px] border-zinc-800/90 shadow-2xl shadow-black/80 h-[820px] max-h-[88vh] relative bg-white dark:bg-black overflow-hidden'
             : 'max-w-xl w-full mx-auto relative bg-white dark:bg-black min-h-[calc(100dvh-55px)] border-x-0 sm:border-x border-zinc-200/90 dark:border-zinc-900/60'
         }`}
       >
-        {/* Simulated iOS Status Bar on Phone Frame */}
-        {isPhoneFrame && (
-          <div className="h-10 px-6 flex items-center justify-between text-xs text-zinc-400 font-semibold bg-zinc-950 select-none pt-2 z-30 relative shrink-0">
-            <span className="text-xs font-bold text-white">9:41</span>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-zinc-800 rounded-b-2xl" />
-            <div className="flex items-center gap-1.5 text-zinc-400">
-              <Wifi size={13} />
-              <Battery size={15} className="text-emerald-400" />
+        {devicePose === 'duo' ? (
+          // ==================== iPhone Duo Dual-Display Layout (Arrangement View) ====================
+          <div className="flex-1 flex flex-row w-full h-full overflow-hidden">
+            {/* Left Display (Primary View) */}
+            <div className="flex-1 flex flex-col h-full overflow-hidden relative border-r border-zinc-200 dark:border-zinc-900/60 bg-white dark:bg-black">
+              {/* Primary Display Status Bar */}
+              <div className="h-10 px-5 flex items-center justify-between text-xs text-zinc-400 font-semibold bg-zinc-950 select-none pt-1.5 z-30 relative shrink-0">
+                <span className="text-xs font-bold text-white">9:41</span>
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-[10px] text-zinc-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Pantalla Principal</span>
+                </div>
+                <div className="flex items-center gap-1 text-zinc-400">
+                  <Wifi size={12} />
+                  <Battery size={14} className="text-emerald-400" />
+                </div>
+              </div>
+
+              {/* Left Display Scrollable Content */}
+              <div ref={scrollContainerRef} className="flex-1 flex flex-col relative overflow-y-auto overscroll-contain no-scrollbar">
+                {activeTab === 'home' ? (
+                  <div key="tab-home-duo" className="flex-1 flex flex-col animate-in fade-in duration-100">
+                    <DashboardScreen
+                      subscriptions={subscriptions}
+                      onSelectSubscription={(sub) => {
+                        setSelectedSubscription(sub);
+                      }}
+                      onOpenAddModal={() => {
+                        setEditingSubscription(null);
+                        setIsAddEditModalOpen(true);
+                      }}
+                      onEditSubscription={(sub) => {
+                        setEditingSubscription(sub);
+                        setIsAddEditModalOpen(true);
+                      }}
+                      onNavigateToBackup={() => {
+                        setActiveTab('backup');
+                      }}
+                      onQuickMarkPaid={handleQuickMarkPaid}
+                      onUpdateSubscription={handleUpdateSubscription}
+                    />
+                  </div>
+                ) : activeTab === 'analytics' ? (
+                  <div key="tab-analytics-duo" className="flex-1 flex flex-col animate-in fade-in duration-100">
+                    <AnalyticsNotificationScreen
+                      subscriptions={subscriptions}
+                      notifications={notifications}
+                      notificationSettings={notificationSettings}
+                      theme={theme}
+                      onUpdateTheme={setTheme}
+                      onUpdateSettings={setNotificationSettings}
+                      onSelectSubscription={(sub) => {
+                        setSelectedSubscription(sub);
+                      }}
+                      onTriggerTestNotification={handleTriggerTestNotification}
+                      onClearNotifications={() => setNotifications([])}
+                      onToggleNotificationRead={handleToggleNotificationRead}
+                      onDeleteNotification={handleDeleteNotification}
+                      onMarkAllNotificationsRead={handleMarkAllNotificationsRead}
+                      onScanRenewalsNow={handleScanUpcomingRenewalsNow}
+                    />
+                  </div>
+                ) : (
+                  <div key="tab-backup-duo" className="flex-1 flex flex-col animate-in fade-in duration-100">
+                    <BackupSyncScreen
+                      subscriptions={subscriptions}
+                      notificationSettings={notificationSettings}
+                      onRestoreSubscriptions={handleRestoreSubscriptions}
+                      onShowBanner={triggerInAppBanner}
+                      onOpenGooglePlay={() => setIsGooglePlayModalOpen(true)}
+                      onOpenPrivacy={() => setIsPrivacyModalOpen(true)}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Left Bottom Nav Bar */}
+              <BottomNavBar
+                activeTab={activeTab}
+                onChangeTab={(tab) => {
+                  setActiveTab(tab);
+                }}
+                onOpenAddModal={() => {
+                  setEditingSubscription(null);
+                  setIsAddEditModalOpen(true);
+                }}
+                unreadNotificationsCount={notifications.filter((n) => !n.read).length}
+                isPhoneFrame={true}
+              />
+            </div>
+
+            {/* iPhone Duo Center Hinge / Titanium Folding Axis */}
+            <div className="w-4 sm:w-5 iphone-duo-hinge h-full z-20 flex flex-col items-center justify-center shrink-0 select-none">
+              <div className="w-1 h-20 rounded-full bg-zinc-600/70 dark:bg-zinc-500/50 shadow-inner" />
+            </div>
+
+            {/* Right Display (Arrangement View Secondary Companion Panel) */}
+            <div className="flex-1 flex flex-col h-full overflow-hidden relative bg-zinc-50/70 dark:bg-zinc-950/80">
+              {/* Secondary Status Bar */}
+              <div className="h-10 px-4 flex items-center justify-between text-xs text-zinc-400 font-semibold bg-zinc-950/95 select-none pt-1.5 z-30 relative shrink-0 border-b border-zinc-200/40 dark:border-zinc-900/60">
+                <div className="flex items-center gap-1.5">
+                  <Columns2 size={12} className="text-indigo-400" />
+                  <span className="text-[11px] font-semibold text-zinc-300">
+                    {selectedSubscription ? selectedSubscription.name : 'Arrangement View'}
+                  </span>
+                </div>
+                {selectedSubscription && (
+                  <button
+                    onClick={() => setSelectedSubscription(null)}
+                    className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors cursor-pointer"
+                  >
+                    Ver Radar General
+                  </button>
+                )}
+              </div>
+
+              {/* Right Display Body */}
+              <div className="flex-1 overflow-y-auto overscroll-contain no-scrollbar relative flex flex-col">
+                {selectedSubscription ? (
+                  <SubscriptionDetailScreen
+                    key={`detail-right-${selectedSubscription.id}`}
+                    subscription={selectedSubscription}
+                    onBack={() => {
+                      setSelectedSubscription(null);
+                    }}
+                    onEdit={(sub) => {
+                      setEditingSubscription(sub);
+                      setIsAddEditModalOpen(true);
+                    }}
+                    onDelete={handleDeleteSubscription}
+                    onUpdate={handleUpdateSubscription}
+                  />
+                ) : (
+                  // Live Arrangement View Companion (Real-time Insights, Renewal Radar, Quick Stats)
+                  <div className="p-4 sm:p-5 space-y-4 animate-in fade-in duration-150">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                          <Sparkles size={16} className="text-amber-400" />
+                          <span>Radar de Suscripciones</span>
+                        </h2>
+                        <p className="text-xs text-zinc-500">Pantalla secundaria activa en tiempo real</p>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                        iOS 27 Duo
+                      </span>
+                    </div>
+
+                    {/* Quick Stats Grid */}
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 shadow-xs">
+                        <span className="text-[11px] text-zinc-500 block">Total Activas</span>
+                        <span className="text-xl font-bold text-zinc-900 dark:text-white tabular-nums">
+                          {subscriptions.filter((s) => s.isActive).length}
+                        </span>
+                      </div>
+                      <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 shadow-xs">
+                        <span className="text-[11px] text-zinc-500 block">Gasto Mensual</span>
+                        <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                          ${subscriptions.filter((s) => s.isActive).reduce((acc, s) => acc + (s.frequency === 'yearly' ? s.cost / 12 : s.cost), 0).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Upcoming Renewals Timeline Preview */}
+                    <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 shadow-xs space-y-2.5">
+                      <h3 className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
+                        Próximas a Renovar
+                      </h3>
+                      {subscriptions.length === 0 ? (
+                        <p className="text-xs text-zinc-500 py-3 text-center">No hay suscripciones registradas aún.</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {subscriptions.slice(0, 4).map((sub) => (
+                            <div
+                              key={sub.id}
+                              onClick={() => setSelectedSubscription(sub)}
+                              className="flex items-center justify-between p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800/60 cursor-pointer transition-colors group"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm">{sub.icon || '📱'}</span>
+                                <div>
+                                  <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-indigo-400 transition-colors block">
+                                    {sub.name}
+                                  </span>
+                                  <span className="text-[10px] text-zinc-500">{sub.nextBillingDate}</span>
+                                </div>
+                              </div>
+                              <span className="text-xs font-bold text-zinc-900 dark:text-white tabular-nums">
+                                ${sub.cost.toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Guidance Card for Duo Experience */}
+                    <div className="p-3 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/40 text-xs text-indigo-900 dark:text-indigo-200 flex items-start gap-2">
+                      <Columns2 size={16} className="text-indigo-500 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="block font-semibold">Modo Duo Interactivo:</strong>
+                        <span>Haz clic en cualquier suscripción de la pantalla izquierda para ver su historial de pagos, recibos y edición simultánea.</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        )}
+        ) : (
+          // ==================== Single Screen View (iPhone Pro or Fluid) ====================
+          <>
+            {/* Simulated iOS Status Bar on iPhone Frame */}
+            {isPhoneFrame && (
+              <div className="h-10 px-6 flex items-center justify-between text-xs text-zinc-400 font-semibold bg-zinc-950 select-none pt-2 z-30 relative shrink-0">
+                <span className="text-xs font-bold text-white">9:41</span>
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-zinc-800 rounded-b-2xl" />
+                <div className="flex items-center gap-1.5 text-zinc-400">
+                  <Wifi size={13} />
+                  <Battery size={15} className="text-emerald-400" />
+                </div>
+              </div>
+            )}
 
-        {/* View Routing - Unified responsive scrolling with instant 0ms switching */}
-        <div
-          ref={scrollContainerRef}
-          className={`flex-1 flex flex-col relative bg-white dark:bg-black no-scrollbar ${
-            isPhoneFrame ? 'overflow-y-auto overscroll-contain' : ''
-          }`}
-        >
-          {selectedSubscription ? (
-            <SubscriptionDetailScreen
-              key={`detail-${selectedSubscription.id}`}
-              subscription={selectedSubscription}
-              onBack={() => {
-                setSelectedSubscription(null);
-                scrollToTop();
-              }}
-              onEdit={(sub) => {
-                setEditingSubscription(sub);
-                setIsAddEditModalOpen(true);
-              }}
-              onDelete={handleDeleteSubscription}
-              onUpdate={handleUpdateSubscription}
-            />
-          ) : activeTab === 'home' ? (
-            <div key="tab-home" className="flex-1 flex flex-col animate-in fade-in duration-100">
-              <DashboardScreen
-                subscriptions={subscriptions}
-                onSelectSubscription={(sub) => {
-                  setSelectedSubscription(sub);
+            {/* View Routing - Unified responsive scrolling with instant 0ms switching */}
+            <div
+              ref={scrollContainerRef}
+              className={`flex-1 flex flex-col relative bg-white dark:bg-black no-scrollbar ${
+                isPhoneFrame ? 'overflow-y-auto overscroll-contain' : ''
+              }`}
+            >
+              {selectedSubscription ? (
+                <SubscriptionDetailScreen
+                  key={`detail-${selectedSubscription.id}`}
+                  subscription={selectedSubscription}
+                  onBack={() => {
+                    setSelectedSubscription(null);
+                    scrollToTop();
+                  }}
+                  onEdit={(sub) => {
+                    setEditingSubscription(sub);
+                    setIsAddEditModalOpen(true);
+                  }}
+                  onDelete={handleDeleteSubscription}
+                  onUpdate={handleUpdateSubscription}
+                />
+              ) : activeTab === 'home' ? (
+                <div key="tab-home" className="flex-1 flex flex-col animate-in fade-in duration-100">
+                  <DashboardScreen
+                    subscriptions={subscriptions}
+                    onSelectSubscription={(sub) => {
+                      setSelectedSubscription(sub);
+                      scrollToTop();
+                    }}
+                    onOpenAddModal={() => {
+                      setEditingSubscription(null);
+                      setIsAddEditModalOpen(true);
+                    }}
+                    onEditSubscription={(sub) => {
+                      setEditingSubscription(sub);
+                      setIsAddEditModalOpen(true);
+                    }}
+                    onNavigateToBackup={() => {
+                      setActiveTab('backup');
+                      scrollToTop();
+                    }}
+                    onQuickMarkPaid={handleQuickMarkPaid}
+                    onUpdateSubscription={handleUpdateSubscription}
+                  />
+                </div>
+              ) : activeTab === 'analytics' ? (
+                <div key="tab-analytics" className="flex-1 flex flex-col animate-in fade-in duration-100">
+                  <AnalyticsNotificationScreen
+                    subscriptions={subscriptions}
+                    notifications={notifications}
+                    notificationSettings={notificationSettings}
+                    theme={theme}
+                    onUpdateTheme={setTheme}
+                    onUpdateSettings={setNotificationSettings}
+                    onSelectSubscription={(sub) => {
+                      setSelectedSubscription(sub);
+                      scrollToTop();
+                    }}
+                    onTriggerTestNotification={handleTriggerTestNotification}
+                    onClearNotifications={() => setNotifications([])}
+                    onToggleNotificationRead={handleToggleNotificationRead}
+                    onDeleteNotification={handleDeleteNotification}
+                    onMarkAllNotificationsRead={handleMarkAllNotificationsRead}
+                    onScanRenewalsNow={handleScanUpcomingRenewalsNow}
+                  />
+                </div>
+              ) : (
+                <div key="tab-backup" className="flex-1 flex flex-col animate-in fade-in duration-100">
+                  <BackupSyncScreen
+                    subscriptions={subscriptions}
+                    notificationSettings={notificationSettings}
+                    onRestoreSubscriptions={handleRestoreSubscriptions}
+                    onShowBanner={triggerInAppBanner}
+                    onOpenGooglePlay={() => setIsGooglePlayModalOpen(true)}
+                    onOpenPrivacy={() => setIsPrivacyModalOpen(true)}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Bottom Tab Bar (shown when not inspecting details) */}
+            {!selectedSubscription && (
+              <BottomNavBar
+                activeTab={activeTab}
+                onChangeTab={(tab) => {
+                  setActiveTab(tab);
                   scrollToTop();
                 }}
                 onOpenAddModal={() => {
                   setEditingSubscription(null);
                   setIsAddEditModalOpen(true);
                 }}
-                onEditSubscription={(sub) => {
-                  setEditingSubscription(sub);
-                  setIsAddEditModalOpen(true);
-                }}
-                onNavigateToBackup={() => {
-                  setActiveTab('backup');
-                  scrollToTop();
-                }}
-                onQuickMarkPaid={handleQuickMarkPaid}
-                onUpdateSubscription={handleUpdateSubscription}
+                unreadNotificationsCount={notifications.filter((n) => !n.read).length}
+                isPhoneFrame={isPhoneFrame}
               />
-            </div>
-          ) : activeTab === 'analytics' ? (
-            <div key="tab-analytics" className="flex-1 flex flex-col animate-in fade-in duration-100">
-              <AnalyticsNotificationScreen
-                subscriptions={subscriptions}
-                notifications={notifications}
-                notificationSettings={notificationSettings}
-                theme={theme}
-                onUpdateTheme={setTheme}
-                onUpdateSettings={setNotificationSettings}
-                onSelectSubscription={(sub) => {
-                  setSelectedSubscription(sub);
-                  scrollToTop();
-                }}
-                onTriggerTestNotification={handleTriggerTestNotification}
-                onClearNotifications={() => setNotifications([])}
-                onToggleNotificationRead={handleToggleNotificationRead}
-                onDeleteNotification={handleDeleteNotification}
-                onMarkAllNotificationsRead={handleMarkAllNotificationsRead}
-                onScanRenewalsNow={handleScanUpcomingRenewalsNow}
-              />
-            </div>
-          ) : (
-            <div key="tab-backup" className="flex-1 flex flex-col animate-in fade-in duration-100">
-              <BackupSyncScreen
-                subscriptions={subscriptions}
-                notificationSettings={notificationSettings}
-                onRestoreSubscriptions={handleRestoreSubscriptions}
-                onShowBanner={triggerInAppBanner}
-                onOpenGooglePlay={() => setIsGooglePlayModalOpen(true)}
-                onOpenPrivacy={() => setIsPrivacyModalOpen(true)}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Bottom Tab Bar (shown when not inspecting details) */}
-        {!selectedSubscription && (
-          <BottomNavBar
-            activeTab={activeTab}
-            onChangeTab={(tab) => {
-              setActiveTab(tab);
-              scrollToTop();
-            }}
-            onOpenAddModal={() => {
-              setEditingSubscription(null);
-              setIsAddEditModalOpen(true);
-            }}
-            unreadNotificationsCount={notifications.filter((n) => !n.read).length}
-            isPhoneFrame={isPhoneFrame}
-          />
+            )}
+          </>
         )}
       </main>
 

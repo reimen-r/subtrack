@@ -98,6 +98,24 @@ This document records the chronological history, design decisions, architectural
      - Enforced Liquid Glass layer discipline: removed redundant heavy `backdrop-blur` from content-layer cards, reserving translucent Liquid Glass strictly for floating functional chrome (Dock & Header).
      - Unified dock active tab indicators to the signature emerald brand color (`#10b981`), removing competing multi-colored dock pills.
      - Preserved tabular figure alignment across all monetary and countdown elements.
+---
+
+### Phase 8: Upgrade to iOS 27 and iPhone Duo Architecture
+- **User Directive:** "pasemos a ios 27 esta app"
+- **Implementation & Apple HIG Conformance:**
+  1. **Liquid Glass 2.0 Materials (`liquid-glass.md`):**
+     - Upgraded glassmorphic styling to `.ios-27-glass` with 210% saturation boost, 32px backdrop blur, subtle ambient drop shadows, and top hairline specular reflections.
+     - Preserved clean layer separation: content cards remain crisp, solid, and easily legible without muddy text blurs.
+  2. **iPhone Duo Dual-Display & Arrangement View (`designing-for-iphone-duo.md`):**
+     - Added multi-pose presentation selector in top header: `iPhone Pro` (`'iphone'`), `iPhone Duo` (`'duo'`), and `Fluido` (`'fluid'`).
+     - In `duo` mode, renders an authentic foldable dual-screen container with a center titanium hinge (`.iphone-duo-hinge`).
+     - Implements Apple's Arrangement View:
+       - **Primary Screen (Left):** Houses the main subscription list, category search, and compact navigation dock.
+       - **Secondary Screen (Right):** Houses contextual live data—either interactive full `SubscriptionDetailScreen` (with immediate editing and payment history) or the Live Renewal Radar (active metrics, renewal countdowns, and quick tips).
+  3. **Dynamic Island Live Activities:**
+     - Styled `InAppNotificationBanner.tsx` as a floating capsule with live pulsating green status beacon and tactile spring physics.
+  4. **Persistence:**
+     - Saved selected device pose in `localStorage` under `subtrack_device_pose_v27` for consistent session resumption.
 
 ---
 

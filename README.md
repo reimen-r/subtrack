@@ -1,11 +1,12 @@
 # SubTrack 📱💳
 
-> **Elegant, privacy-first mobile subscription tracker inspired by iOS 18 Liquid Glass design.**  
-> Track monthly burn rate, receive timely renewal alerts, organize subscriptions with dynamic brand icons, and retain 100% data sovereignty with zero cloud intermediaries.
+> **Elegant, privacy-first mobile subscription tracker designed to the iOS 27 Liquid Glass 2.0 and iPhone Duo foldable architecture.**  
+> Track monthly burn rate, receive timely renewal alerts, organize subscriptions with dynamic brand icons, inspect dual-screen Arrangement Views, and retain 100% data sovereignty with zero cloud intermediaries.
 
+[![iOS 27 Ready](https://img.shields.io/badge/Design-iOS_27_HIG-007AFF?logo=apple&logoColor=white)](https://developer.apple.com/)
+[![iPhone Duo](https://img.shields.io/badge/Dual_Display-iPhone_Duo-6366F1?logo=apple&logoColor=white)](https://developer.apple.com/)
 [![React 19](https://img.shields.io/badge/React-19.0.1-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS v4](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Offline_First-00E676?logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 [![Privacy](https://img.shields.io/badge/Privacy-Zero_Telemetry-emerald)](./security.md)
@@ -54,10 +55,11 @@
 
 ## ✨ Features at a Glance
 
-### 💎 iOS 18 Liquid Glass & Apple HIG Ergonomics
-- **Liquid Glass Chrome:** Translucent floating bottom dock and modal sheets with `backdrop-blur-2xl` and fine specular specular borders.
+### 💎 iOS 27 Liquid Glass 2.0 & Apple HIG Ergonomics
+- **Liquid Glass 2.0:** Translucent floating bottom dock and modal sheets with 210% saturation boost, 32px backdrop blur, and fine specular reflection hairlines.
+- **iPhone Duo Foldable Support:** Authentic dual-display Arrangement View with center titanium hinge, left primary list, and right live companion radar.
+- **Dynamic Island Live Activities:** Floating alert capsule with pulsating real-time renewal beacon and tactile spring physics.
 - **Strict 44pt Touch Targets:** Compliant with Apple Human Interface Guidelines for effortless one-handed mobile use.
-- **Dynamic Island Capsule:** Floating in-app alert banner with spring physics transitions.
 - **Safe Area Insets:** Fully respects notch, Dynamic Island, and iPhone Home Bar insets.
 
 ### ⚡ Fluid Swipe Gestures

@@ -1,8 +1,8 @@
-# System Architecture & Technical Design: SubTrack
+# System Architecture & Technical Design: SubTrack (iOS 27 & iPhone Duo Edition)
 
 ## 1. System Overview
 
-**SubTrack** is built as an offline-first, client-authoritative Single Page Application (SPA) and Progressive Web App (PWA). It is architected for zero latency, complete client privacy, and native iOS 18 mobile ergonomics. All application logic, scheduling, audio synthesis, brand resolution, and financial calculations execute entirely in the user's browser runtime.
+**SubTrack** is built as an offline-first, client-authoritative Single Page Application (SPA) and Progressive Web App (PWA) designed to the next-generation **iOS 27** and **iPhone Duo** Apple Human Interface Guidelines. It is architected for zero latency, complete client privacy, multi-pose dual-screen adaptability (Arrangement View), Dynamic Island Live Activities, and native Liquid Glass 2.0 materials. All application logic, scheduling, audio synthesis, brand resolution, and financial calculations execute entirely in the user's browser runtime.
 
 ```
 +-----------------------------------------------------------------------------------+

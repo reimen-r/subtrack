@@ -42,6 +42,12 @@
 - Bottom dock and floating action controls must incorporate `padding-bottom: max(12px, env(safe-area-inset-bottom))`.
 - Avoid cutting off content behind the iPhone Home Bar or Dynamic Island.
 
+### 2.4 iOS 27 & iPhone Duo Foldable Architecture Rules
+- **Liquid Glass 2.0 Materials:** Use `.ios-27-glass` with 210% backdrop saturation boost, subtle top hairline specular reflection (`border-white/20`), and functional layer separation. Content cards remain crisp, solid, and legible.
+- **iPhone Duo Arrangement View:** On dual-display foldable viewports, support side-by-side Arrangement Views with the primary list on the left display and contextual detail/live radar on the right display, respecting the center folding hinge.
+- **Dynamic Island Live Activities:** Real-time renewal alerts and payment confirmations must format as pill capsules with pulsing status beacon and tactile interaction.
+- **Single-Word Labels:** Navigation controls use concise single-word Apple labels (`Suscripciones`, `Analítica`, `Ajustes`).
+
 ---
 
 ## 3. Brand Iconography & Visual Recognition
