@@ -56,11 +56,26 @@
 ## ✨ Features at a Glance
 
 ### 💎 iOS 27 Liquid Glass 2.0 & Apple HIG Ergonomics
-- **Liquid Glass 2.0:** Translucent floating bottom dock and modal sheets with 210% saturation boost, 32px backdrop blur, and fine specular reflection hairlines.
-- **iPhone Duo Foldable Support:** Authentic dual-display Arrangement View with center titanium hinge, left primary list, and right live companion radar.
-- **Dynamic Island Live Activities:** Floating alert capsule with pulsating real-time renewal beacon and tactile spring physics.
-- **Strict 44pt Touch Targets:** Compliant with Apple Human Interface Guidelines for effortless one-handed mobile use.
-- **Safe Area Insets:** Fully respects notch, Dynamic Island, and iPhone Home Bar insets.
+- **Liquid Glass 2.0 Materials (`.ios-27-glass`):** Translucent floating chrome with 210% saturation boost, 32px backdrop blur, subtle ambient depth shadow, and fine top hairline specular reflection (`border-white/20`).
+- **Layer Separation Discipline:** Content cards remain solid, crisp, and high-contrast, reserving blur exclusively for floating functional chrome.
+- **Strict 44pt Touch Targets:** Full compliance with Apple Human Interface Guidelines (`min-h-[44px]` / `min-w-[44px]`) across all buttons, tabs, and segmented controls.
+- **Single-Word Terminology:** Simplified canonical navigation labels (`Suscripciones`, `Analítica`, `Ajustes`).
+- **Accessibility Invariants:** Full media query fallbacks for `@media (prefers-reduced-transparency: reduce)` and `@media (prefers-contrast: more)`.
+- **Safe Area Inset Support:** Uses `env(safe-area-inset-top)` and `env(safe-area-inset-bottom)` for notch, camera cutouts, and iPhone Home Bar.
+
+### 📱 iPhone Duo Foldable Architecture & Arrangement View
+- **Multi-Pose Device Switcher:** Instant top-bar toggle between **iPhone Pro** (`Smartphone`), **iPhone Duo** (`Columns2`), and **Fluido** (`Monitor`).
+- **Dual-Display Arrangement View (`designing-for-iphone-duo.md`):**
+  - **Left Display (Primary):** Live dashboard, monthly burn rate hero cards, instant search, category filter chips, and compact bottom dock.
+  - **Center Titanium Hinge (`.iphone-duo-hinge`):** Authentic metallic folding spine with depth shadow and folding region support.
+  - **Right Display (Secondary Companion):**
+    - *When no subscription is selected:* Displays the **Radar de Suscripciones** with active statistics, total monthly burn rate, and interactive upcoming renewal timeline.
+    - *When a subscription is clicked:* Instantly opens the full **SubscriptionDetailScreen** side-by-side, displaying payment history, invoice numbers, direct cancellation links, and immediate editing without losing the primary list position.
+
+### 🏝️ Dynamic Island Live Activities
+- **Floating Live Activity Capsule:** Interactive in-app notification banner (`InAppNotificationBanner.tsx`) styled after iOS 27 Dynamic Island with smooth spring physics transitions.
+- **Pulsing Status Beacon:** Live green pulsating indicator and tabular countdown details.
+- **Dual Feedback:** Accompanied by synthesized Web Audio chimes and tactile haptic vibration.
 
 ### ⚡ Fluid Swipe Gestures
 - **Swipe Right (Emerald Track):** Instantly marks the current cycle as paid with dual-tone Web Audio chime, tactile vibration, and celebratory confetti particles.
@@ -76,7 +91,7 @@
 - Automatic brand color matching on squircles with smooth category-themed fallbacks.
 
 ### 🔔 4-Tier Smart Notification Pipeline
-1. **Dynamic Island Capsule:** Instant in-app banner with spring physics.
+1. **Dynamic Island Live Activity:** Instant in-app banner with spring physics and pulsing beacon.
 2. **Web Audio Oscillator Chimes:** 0 KB synthesized dual-tone harmonic chimes (F6 1396Hz -> A6 1760Hz); no audio files to fetch.
 3. **Tactile Vibration:** Short haptic pulses (`navigator.vibrate`) on supported mobile devices.
 4. **Service Worker Push Alerts:** System notifications dispatched locally before renewal dates with deduplication prevention.
@@ -142,17 +157,18 @@ npm run lint
 │   └── sw.js                   # Service Worker (precache & push handler)
 ├── src/
 │   ├── components/             # UI Components
-│   │   ├── AddEditSubscriptionModal.tsx   # Add/Edit subscription sheet
+│   │   ├── AddEditSubscriptionModal.tsx   # Add/Edit subscription sheet with Apple grabber
 │   │   ├── AnalyticsNotificationScreen.tsx# Spend charts, calendar, & alert diagnostics
 │   │   ├── BackupSyncScreen.tsx           # JSON backup/restore, calendar sync
-│   │   ├── BottomNavBar.tsx               # iOS 18 floating glass dock
+│   │   ├── BottomNavBar.tsx               # iOS 27 compact Liquid Glass dock (44pt touch targets)
 │   │   ├── DashboardScreen.tsx            # Main metrics, search & cards list
-│   │   ├── GooglePlayCenterModal.tsx      # PWA/Play store guidance
-│   │   ├── InAppNotificationBanner.tsx    # Dynamic Island notification banner
+│   │   ├── GooglePlayCenterModal.tsx      # PWA/Play store packaging guidance
+│   │   ├── InAppNotificationBanner.tsx    # iOS 27 Dynamic Island Live Activity banner
 │   │   ├── OfflineIndicator.tsx           # Offline status pill
 │   │   ├── PrivacyPolicyModal.tsx         # In-app privacy disclosure
 │   │   ├── ServiceLogo.tsx                # Dynamic brand icon resolver (40+ brands)
 │   │   ├── SubscriptionDetailScreen.tsx   # Detailed modal with history & cancel link
+│   │   ├── SubTrackLogo.tsx               # Vector brand logomark & iconography
 │   │   └── SwipeableSubscriptionCard.tsx  # Touch-friendly card with swipe actions
 │   ├── utils/                  # Domain Utilities & Services
 │   │   ├── backupService.ts               # JSON schema verification & export/import
@@ -161,8 +177,8 @@ npm run lint
 │   │   ├── notificationService.ts         # Web Audio oscillator & push dispatcher
 │   │   ├── subscriptionUtils.ts           # Monthly burn rate math & cycle advance
 │   │   └── usePWAInstall.ts               # Hook for beforeinstallprompt event
-│   ├── App.tsx                 # Root controller & view state coordinator
-│   ├── index.css               # Tailwind CSS v4 variables & glass styling
+│   ├── App.tsx                 # Root controller, multi-pose state, & Arrangement View
+│   ├── index.css               # Tailwind CSS v4 variables & Liquid Glass 2.0 styling
 │   ├── main.tsx                # React DOM entry point & Service Worker registration
 │   └── types.ts                # TypeScript interfaces & domain models
 ├── architecture.md             # Detailed technical architecture specification
@@ -173,6 +189,30 @@ npm run lint
 ├── product.md                  # Product Strategy & Feature Roadmap
 └── tasks.md                    # Task backlog & completion status
 ```
+
+---
+
+## 🔄 Historial de Actualizaciones / Changelog
+
+### 🚀 v2.7.0 — Edición iOS 27 & iPhone Duo (Actual)
+- **Pantalla Dual Plegable iPhone Duo:** Soporte nativo para el estándar de hardware plegable de Apple (`designing-for-iphone-duo.md`). Selector multi-postura en la cabecera superior:
+  - **iPhone Pro** (`Smartphone`): marco insignia clásico de pantalla única.
+  - **iPhone Duo** (`Columns2`): chasis de pantalla doble con bisagra central de titanio (`.iphone-duo-hinge`).
+  - **Fluido** (`Monitor`): presentación responsive full-width para navegadores de escritorio y tablets.
+- **Arrangement View Interactiva:** En postura Duo, la app despliega una experiencia de doble pantalla simultánea:
+  - **Pantalla Izquierda (Primaria):** Lista interactiva de suscripciones, tarjetas resumen de burn rate mensual, buscador instantáneo, chips de categoría y dock de navegación.
+  - **Bisagra Central de Titanio:** Acabado metálico con shader de profundidad y respeto al área reservada de plegado.
+  - **Pantalla Derecha (Secundaria / Companion):** Muestra el **Radar de Renovaciones en Tiempo Real** (estadísticas vivas, burn rate y timeline de próximos vencimientos) o la **Ficha de Detalle de la Suscripción seleccionada** con historial de pagos, recibos y edición inmediata sin perder la lista principal.
+- **Materiales Liquid Glass 2.0:** Nuevas clases `.ios-27-glass` con realce cromático de saturación al 210%, desenfoque de 32px y biselado especular superior (`border-white/20`).
+- **Dynamic Island Live Activities:** Rediseño de la cápsula de alertas con baliza de estado en verde pulsante, animaciones elásticas y retroalimentación táctil simultánea.
+- **Micro-Dock Ergonómico:** Barra de pestañas ultracompacta (`h-[50px]`) con etiquetas simplificadas de una sola palabra (`Suscripciones`, `Analítica`, `Ajustes`) y touch targets de 44pt.
+- **Documentación Técnica Completa:** Sincronización y publicación de `architecture.md`, `rules.md`, `security.md`, `memory.md` y capturas de alta resolución en `docs/screenshots/`.
+
+### ⚡ v2.0.0 — Gestos Swipe Táctiles & Logos de Marcas Oficiales
+- Catálogo indexado de 40+ servicios globales con logos SVG vectoriales e integración de `lucide-react` y `react-icons`.
+- Gestos swipe táctiles: Deslizar a la derecha para "Marcar Pagado" (con haptics, sintetizador Web Audio y confeti) y a la izquierda para editar.
+- Centro de diagnósticos y pruebas de notificaciones del sistema en vivo con verificación de Service Worker y permisos.
+- Modos Claro y Oscuro nativos con persistencia en `localStorage`.
 
 ---
 
