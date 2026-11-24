@@ -126,6 +126,7 @@ export const SwipeableSubscriptionCard: React.FC<SwipeableSubscriptionCardProps>
       <motion.div
         id={`sub-card-${sub.id}`}
         drag="x"
+        dragDirectionLock
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.4}
         onDragStart={() => setIsDragging(true)}

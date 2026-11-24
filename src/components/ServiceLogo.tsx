@@ -249,7 +249,7 @@ export interface ServiceLogoProps {
   logoUrl?: string;
   color?: string;
   iconName?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
 }
 
@@ -273,6 +273,7 @@ export const ServiceLogo: React.FC<ServiceLogoProps> = ({
   const resolvedLogo = !matchedBrand && !imageError ? getBrandLogoUrl(domain, logoUrl) : (logoUrl && !imageError ? logoUrl : '');
 
   const sizeClasses = {
+    xs: 'w-7 h-7 text-[11px] rounded-lg',
     sm: 'w-9 h-9 text-xs rounded-xl',
     md: 'w-11 h-11 text-sm rounded-2xl',
     lg: 'w-14 h-14 text-base rounded-2xl',
@@ -280,6 +281,7 @@ export const ServiceLogo: React.FC<ServiceLogoProps> = ({
   };
 
   const iconSizes = {
+    xs: 14,
     sm: 18,
     md: 22,
     lg: 28,

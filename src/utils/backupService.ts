@@ -165,6 +165,8 @@ export function validateAndParseBackup(jsonString: string): ValidationResult {
         contractTerms: item.contractTerms || undefined,
         status: item.status || 'active',
         billingHistory: Array.isArray(item.billingHistory) ? item.billingHistory : [],
+        priceHistory: Array.isArray(item.priceHistory) ? item.priceHistory : undefined,
+        splitPlan: item.splitPlan && typeof item.splitPlan === 'object' ? item.splitPlan : undefined,
         createdAt: item.createdAt || new Date().toISOString(),
         notes: item.notes || undefined,
       });

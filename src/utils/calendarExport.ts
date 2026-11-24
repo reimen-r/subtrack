@@ -1,5 +1,5 @@
 import { Subscription, BillingFrequency } from '../types';
-import { formatCurrency } from './subscriptionUtils';
+import { formatCurrency, formatLocalIsoDate } from './subscriptionUtils';
 
 /**
  * Maps subscription billing frequency to iCalendar RRULE FREQ string
@@ -24,8 +24,7 @@ function getRRULE(frequency: BillingFrequency): string {
  */
 function formatICalDate(dateStr: string): string {
   if (!dateStr) {
-    const now = new Date();
-    return now.toISOString().slice(0, 10).replace(/-/g, '');
+    return formatLocalIsoDate(new Date()).replace(/-/g, '');
   }
   return dateStr.replace(/-/g, '');
 }
@@ -129,7 +128,7 @@ export function getGoogleCalendarUrl(sub: Subscription): string {
   const startDate = new Date(sub.nextBillingDate + 'T00:00:00');
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + 1);
-  const endCompact = endDate.toISOString().slice(0, 10).replace(/-/g, '');
+  const endCompact = formatLocalIsoDate(endDate).replace(/-/g, '');
 
   const costFormatted = formatCurrency(sub.cost, sub.currency);
   const title = `Renovación: ${sub.name} (${costFormatted})`;

@@ -264,18 +264,39 @@ export function getBrandLogoUrl(domain?: string, customLogoUrl?: string): string
   return `https://www.google.com/s2/favicons?domain=${clean}&sz=128`;
 }
 
+export function formatLocalIsoDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function calculateNextRenewal(currentDateStr: string, frequency: BillingFrequency): string {
   const d = new Date(currentDateStr + 'T00:00:00');
+  if (Number.isNaN(d.getTime())) {
+    return formatLocalIsoDate(new Date());
+  }
+  const originalDay = d.getDate();
+
   if (frequency === 'monthly') {
+    d.setDate(1);
     d.setMonth(d.getMonth() + 1);
+    const maxDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(originalDay, maxDay));
   } else if (frequency === 'yearly') {
+    d.setDate(1);
     d.setFullYear(d.getFullYear() + 1);
+    const maxDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(originalDay, maxDay));
   } else if (frequency === 'weekly') {
     d.setDate(d.getDate() + 7);
   } else if (frequency === 'quarterly') {
+    d.setDate(1);
     d.setMonth(d.getMonth() + 3);
+    const maxDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(originalDay, maxDay));
   }
-  return d.toISOString().split('T')[0];
+  return formatLocalIsoDate(d);
 }
 
 /**

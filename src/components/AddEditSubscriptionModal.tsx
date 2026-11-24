@@ -24,7 +24,7 @@ import {
 import { Subscription, CurrencyCode, BillingFrequency, SubscriptionCategory, ReminderTiming, SplitPlanConfig, SplitMember } from '../types';
 import { SERVICE_PRESETS, CATEGORY_CONFIG } from '../data/presets';
 import { ServiceLogo } from './ServiceLogo';
-import { formatCurrency, formatRelativeDueDate, getMonthlyEquivalent } from '../utils/subscriptionUtils';
+import { formatCurrency, formatRelativeDueDate, getMonthlyEquivalent, formatLocalIsoDate } from '../utils/subscriptionUtils';
 import { detectCategoryFromText, DetectionResult } from '../utils/categoryDetection';
 
 interface AddEditSubscriptionModalProps {
@@ -40,11 +40,15 @@ export const AddEditSubscriptionModal: React.FC<AddEditSubscriptionModalProps> =
   onSave,
   initialData,
 }) => {
-  const getTodayIso = () => new Date().toISOString().split('T')[0];
+  const getTodayIso = () => formatLocalIsoDate(new Date());
   const getDefaultNextBilling = () => {
     const d = new Date();
+    const originalDay = d.getDate();
+    d.setDate(1);
     d.setMonth(d.getMonth() + 1);
-    return d.toISOString().split('T')[0];
+    const maxDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    d.setDate(Math.min(originalDay, maxDay));
+    return formatLocalIsoDate(d);
   };
 
   const [name, setName] = useState('');

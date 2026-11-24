@@ -6,7 +6,6 @@ import {
   Moon, 
   Smartphone, 
   Monitor, 
-  ShieldCheck, 
   Columns2,
   Sparkles,
 } from 'lucide-react';
@@ -17,11 +16,7 @@ import {
   ThemeMode,
   BillingHistoryRecord,
 } from './types';
-import { 
-  INITIAL_SUBSCRIPTIONS, 
-  INITIAL_NOTIFICATIONS 
-} from './data/presets';
-import { calculateNextRenewal } from './utils/subscriptionUtils';
+import { calculateNextRenewal, getUserMonthlyEquivalent, formatCurrency } from './utils/subscriptionUtils';
 import { DashboardScreen } from './components/DashboardScreen';
 import { SubscriptionDetailScreen } from './components/SubscriptionDetailScreen';
 import { AnalyticsNotificationScreen } from './components/AnalyticsNotificationScreen';
@@ -33,6 +28,7 @@ import { OfflineIndicator } from './components/OfflineIndicator';
 import { GooglePlayCenterModal } from './components/GooglePlayCenterModal';
 import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
 import { SubTrackLogo } from './components/SubTrackLogo';
+import { ServiceLogo } from './components/ServiceLogo';
 import { 
   playNotificationSound, 
   triggerHapticVibration, 
@@ -156,10 +152,30 @@ export default function App() {
     }
   }, []);
 
-  // Active push banner state
+  // Active push banner state & timeout cleanup ref
   const [activeBanner, setActiveBanner] = useState<{ title: string; message: string } | null>(null);
+  const bannerTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (bannerTimeoutRef.current !== null) {
+        window.clearTimeout(bannerTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // View presentation mode (iPhone Pro, iPhone Duo Foldable, or Fluid Responsive)
+  const [viewportWidth, setViewportWidth] = useState<number>(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 1024
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [devicePose, setDevicePose] = useState<DevicePose>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(STORAGE_KEY_DEVICE_POSE);
@@ -176,7 +192,14 @@ export default function App() {
     localStorage.setItem(STORAGE_KEY_DEVICE_POSE, devicePose);
   }, [devicePose]);
 
-  const isPhoneFrame = devicePose === 'iphone';
+  const effectivePose: DevicePose =
+    devicePose === 'duo' && viewportWidth >= 768
+      ? 'duo'
+      : devicePose === 'iphone' && viewportWidth >= 640
+      ? 'iphone'
+      : 'fluid';
+
+  const isPhoneFrame = effectivePose === 'iphone';
 
   // Persist changes
   useEffect(() => {
@@ -312,10 +335,10 @@ export default function App() {
     triggerInAppBanner('Subscription Deleted', `${target?.name || 'Item'} has been removed.`);
   };
 
-  // Handler: Update subscription directly (e.g. from Details screen)
+  // Handler: Update subscription directly (e.g. from Details screen or quick actions)
   const handleUpdateSubscription = (updated: Subscription) => {
-    setSubscriptions(subscriptions.map((s) => (s.id === updated.id ? updated : s)));
-    setSelectedSubscription(updated);
+    setSubscriptions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+    setSelectedSubscription((prev) => (prev?.id === updated.id ? updated : prev));
   };
 
   // Handler: Quick mark paid from Dashboard with actual state update and next renewal calculation
@@ -345,6 +368,16 @@ export default function App() {
     triggerInAppBanner('¡Pago Registrado!', `${sub.name} renovado hasta ${nextDate}.`);
   };
 
+  const scheduleBannerDismiss = () => {
+    if (bannerTimeoutRef.current !== null) {
+      window.clearTimeout(bannerTimeoutRef.current);
+    }
+    bannerTimeoutRef.current = window.setTimeout(() => {
+      setActiveBanner(null);
+      bannerTimeoutRef.current = null;
+    }, 4500);
+  };
+
   // Trigger temporary In-App notification banner & native sound/haptics/system push
   const triggerInAppBanner = (title: string, message: string) => {
     setActiveBanner({ title, message });
@@ -361,9 +394,7 @@ export default function App() {
       sendSystemNotification(title, { body: message });
     }
 
-    setTimeout(() => {
-      setActiveBanner(null);
-    }, 4500);
+    scheduleBannerDismiss();
   };
 
   // Full-featured test notification trigger with detailed channel status report
@@ -420,9 +451,7 @@ export default function App() {
       setNotifications((prev) => [testNotif, ...prev]);
     }
 
-    setTimeout(() => {
-      setActiveBanner(null);
-    }, 4500);
+    scheduleBannerDismiss();
 
     return {
       sent: pushResult.sent,
@@ -510,6 +539,7 @@ export default function App() {
     }
 
     setSubscriptions(finalSubs);
+    setSelectedSubscription(null);
     localStorage.setItem(STORAGE_KEY_SUBS, JSON.stringify(finalSubs));
 
     confetti({
@@ -523,26 +553,6 @@ export default function App() {
       '¡Copia restaurada!',
       `${finalSubs.length} suscripciones están ahora sincronizadas y listas.`
     );
-  };
-
-  // Clear all data to start from zero
-  const handleClearAllData = () => {
-    setSubscriptions([]);
-    setNotifications([]);
-    localStorage.removeItem(STORAGE_KEY_SUBS);
-    localStorage.removeItem(STORAGE_KEY_NOTIFS);
-    setSelectedSubscription(null);
-    triggerInAppBanner('Comenzar de cero', 'Se han borrado todas las suscripciones. Listo para empezar.');
-  };
-
-  // Load sample demo data
-  const handleLoadSampleData = () => {
-    setSubscriptions(INITIAL_SUBSCRIPTIONS);
-    setNotifications(INITIAL_NOTIFICATIONS);
-    localStorage.setItem(STORAGE_KEY_SUBS, JSON.stringify(INITIAL_SUBSCRIPTIONS));
-    localStorage.setItem(STORAGE_KEY_NOTIFS, JSON.stringify(INITIAL_NOTIFICATIONS));
-    setSelectedSubscription(null);
-    triggerInAppBanner('Datos de ejemplo', 'Se han cargado las suscripciones de demostración.');
   };
 
   // Dedicated container ref for reliable top-scrolling in all frame modes
@@ -569,7 +579,13 @@ export default function App() {
       {/* Push Notification Banner */}
       <InAppNotificationBanner
         notification={activeBanner}
-        onDismiss={() => setActiveBanner(null)}
+        onDismiss={() => {
+          if (bannerTimeoutRef.current !== null) {
+            window.clearTimeout(bannerTimeoutRef.current);
+            bannerTimeoutRef.current = null;
+          }
+          setActiveBanner(null);
+        }}
       />
 
       {/* Top Utility Bar (iOS 27 Translucent Glass Header with Safe Area support) */}
@@ -594,39 +610,39 @@ export default function App() {
               type="button"
               onClick={() => setDevicePose('iphone')}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                devicePose === 'iphone'
+                effectivePose === 'iphone'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
               }`}
               title="Marco compacto estilo iPhone Pro"
             >
-              <Smartphone size={12} className={devicePose === 'iphone' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
+              <Smartphone size={12} className={effectivePose === 'iphone' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
               <span>iPhone Pro</span>
             </button>
             <button
               type="button"
               onClick={() => setDevicePose('duo')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                devicePose === 'duo'
+              className={`hidden md:flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                effectivePose === 'duo'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
               }`}
               title="Pantalla doble plegable iPhone Duo (Arrangement View)"
             >
-              <Columns2 size={12} className={devicePose === 'duo' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
+              <Columns2 size={12} className={effectivePose === 'duo' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
               <span>iPhone Duo</span>
             </button>
             <button
               type="button"
               onClick={() => setDevicePose('fluid')}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                devicePose === 'fluid'
+                effectivePose === 'fluid'
                   ? 'bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-xs'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
               }`}
               title="Vista Fluida sin marco de dispositivo"
             >
-              <Monitor size={12} className={devicePose === 'fluid' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
+              <Monitor size={12} className={effectivePose === 'fluid' ? 'text-indigo-500 dark:text-indigo-400' : ''} />
               <span>Fluido</span>
             </button>
           </div>
@@ -657,14 +673,14 @@ export default function App() {
       {/* Main Container / iOS 27 Multi-Pose Wrapper */}
       <main
         className={`w-full transition-all duration-300 flex-1 flex flex-col no-scrollbar ${
-          devicePose === 'duo'
+          effectivePose === 'duo'
             ? 'max-w-5xl my-3 sm:my-4 rounded-[40px] border-[5px] border-zinc-800/90 shadow-2xl shadow-black/80 h-[830px] max-h-[88vh] relative bg-white dark:bg-black overflow-hidden flex flex-row'
-            : devicePose === 'iphone'
+            : effectivePose === 'iphone'
             ? 'max-w-[420px] my-3 sm:my-4 rounded-[42px] border-[5px] border-zinc-800/90 shadow-2xl shadow-black/80 h-[820px] max-h-[88vh] relative bg-white dark:bg-black overflow-hidden'
             : 'max-w-xl w-full mx-auto relative bg-white dark:bg-black min-h-[calc(100dvh-55px)] border-x-0 sm:border-x border-zinc-200/90 dark:border-zinc-900/60'
         }`}
       >
-        {devicePose === 'duo' ? (
+        {effectivePose === 'duo' ? (
           // ==================== iPhone Duo Dual-Display Layout (Arrangement View) ====================
           <div className="flex-1 flex flex-row w-full h-full overflow-hidden">
             {/* Left Display (Primary View) */}
@@ -817,13 +833,18 @@ export default function App() {
                       <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 shadow-xs">
                         <span className="text-[11px] text-zinc-500 block">Total Activas</span>
                         <span className="text-xl font-bold text-zinc-900 dark:text-white tabular-nums">
-                          {subscriptions.filter((s) => s.isActive).length}
+                          {subscriptions.filter((s) => s.status === 'active').length}
                         </span>
                       </div>
                       <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-800/80 shadow-xs">
                         <span className="text-[11px] text-zinc-500 block">Gasto Mensual</span>
                         <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                          ${subscriptions.filter((s) => s.isActive).reduce((acc, s) => acc + (s.frequency === 'yearly' ? s.cost / 12 : s.cost), 0).toFixed(2)}
+                          {formatCurrency(
+                            subscriptions
+                              .filter((s) => s.status === 'active')
+                              .reduce((acc, s) => acc + getUserMonthlyEquivalent(s), 0),
+                            'USD'
+                          )}
                         </span>
                       </div>
                     </div>
@@ -833,30 +854,41 @@ export default function App() {
                       <h3 className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
                         Próximas a Renovar
                       </h3>
-                      {subscriptions.length === 0 ? (
-                        <p className="text-xs text-zinc-500 py-3 text-center">No hay suscripciones registradas aún.</p>
+                      {subscriptions.filter((s) => s.status === 'active').length === 0 ? (
+                        <p className="text-xs text-zinc-500 py-3 text-center">No hay suscripciones activas registradas aún.</p>
                       ) : (
                         <div className="space-y-2">
-                          {subscriptions.slice(0, 4).map((sub) => (
-                            <div
-                              key={sub.id}
-                              onClick={() => setSelectedSubscription(sub)}
-                              className="flex items-center justify-between p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800/60 cursor-pointer transition-colors group"
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm">{sub.icon || '📱'}</span>
-                                <div>
-                                  <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-indigo-400 transition-colors block">
-                                    {sub.name}
-                                  </span>
-                                  <span className="text-[10px] text-zinc-500">{sub.nextBillingDate}</span>
+                          {[...subscriptions]
+                            .filter((s) => s.status === 'active')
+                            .sort((a, b) => a.nextBillingDate.localeCompare(b.nextBillingDate))
+                            .slice(0, 4)
+                            .map((sub) => (
+                              <div
+                                key={sub.id}
+                                onClick={() => setSelectedSubscription(sub)}
+                                className="flex items-center justify-between p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800/60 cursor-pointer transition-colors group"
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <ServiceLogo
+                                    name={sub.name}
+                                    domain={sub.domain}
+                                    logoUrl={sub.logoUrl}
+                                    color={sub.color}
+                                    iconName={sub.iconName}
+                                    size="sm"
+                                  />
+                                  <div className="min-w-0">
+                                    <span className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-indigo-400 transition-colors block truncate">
+                                      {sub.name}
+                                    </span>
+                                    <span className="text-[10px] text-zinc-500">{sub.nextBillingDate}</span>
+                                  </div>
                                 </div>
+                                <span className="text-xs font-bold text-zinc-900 dark:text-white tabular-nums shrink-0 ml-2">
+                                  {formatCurrency(sub.cost, sub.currency)}
+                                </span>
                               </div>
-                              <span className="text-xs font-bold text-zinc-900 dark:text-white tabular-nums">
-                                ${sub.cost.toFixed(2)}
-                              </span>
-                            </div>
-                          ))}
+                            ))}
                         </div>
                       )}
                     </div>
